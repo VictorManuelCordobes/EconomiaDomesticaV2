@@ -1,0 +1,83 @@
+body {
+    font-family: system-ui, sans-serif;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1rem;
+    color: #222;
+}
+
+h1,
+header p {
+    text-align: center;
+}
+
+#conceptos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+figure {
+    margin: 0;
+    text-align: center;
+}
+
+figure button {
+    background: none;
+    border: 0;
+    padding: .25rem;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+figure button:hover {
+    background: #eef2f7;
+}
+
+figure button:focus-visible,
+#btn-finalizar:focus-visible {
+    outline: 3px solid #1a73e8;
+    outline-offset: 2px;
+}
+
+figure img {
+    width: 96px;
+    height: 96px;
+    display: block;
+}
+
+figcaption strong,
+figcaption span {
+    display: block;
+}
+
+#contador {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+#aviso {
+    color: #b00020;
+    text-align: center;
+    min-height: 1.5rem;
+}
+
+#btn-finalizar {
+    display: block;
+    margin: 0 auto 1rem;
+    padding: .6rem 1.4rem;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+#resumen {
+    min-height: 10rem;
+    border: 2px dashed #888;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+
+#resumen p {
+    margin: .25rem 0;
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Economía doméstica</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+  <header>
+    <h1>Economía doméstica</h1>
+    <p>Pulsa un concepto para registrar un pago.</p>
+  </header>
+  <main>
+    <section id="conceptos" aria-label="Conceptos de gasto"></section>
+    <p id="contador"></p>
+    <p id="aviso" role="alert"></p>
+    <section aria-label="Resumen de gastos">
+      <button id="btn-finalizar" type="button">Finalizar trámite</button>
+      <div id="resumen" aria-live="polite"></div>
+    </section>
+  </main>
+  <script src="js/economiaDomestica.js"></script>
+</body>
+
+</html>

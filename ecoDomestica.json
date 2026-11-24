@@ -1,0 +1,93 @@
+{
+    "conceptos": [
+        {
+            "id": "1",
+            "nombre": "Luz",
+            "img": "../img/luz.png",
+            "imprescindible": true,
+            "categoria": "S_BAS"
+        },
+        {
+            "id": "2",
+            "nombre": "Agua",
+            "img": "../img/agua.png",
+            "imprescindible": true,
+            "categoria": "S_BAS"
+        },
+        {
+            "id": "3",
+            "nombre": "Gas",
+            "img": "../img/gas.png",
+            "imprescindible": true,
+            "categoria": "S_BAS"
+        },
+        {
+            "id": "4",
+            "nombre": "Comunidad",
+            "img": "../img/comunidad.png",
+            "imprescindible": true,
+            "categoria": "S_BAS"
+        },
+        {
+            "id": "5",
+            "nombre": "Internet",
+            "img": "../img/internet.png",
+            "imprescindible": false,
+            "categoria": "OC"
+        },
+        {
+            "id": "6",
+            "nombre": "Teléfono",
+            "img": "../img/telefono.png",
+            "imprescindible": false,
+            "categoria": "OC"
+        },
+        {
+            "id": "7",
+            "nombre": "Seguro del hogar",
+            "img": "../img/seguro.png",
+            "imprescindible": false,
+            "categoria": "S_BAS"
+        },
+        {
+            "id": "8",
+            "nombre": "Alquiler",
+            "img": "../img/alquiler.png",
+            "imprescindible": true,
+            "categoria": "S_BAS"
+        },
+        {
+            "id": "9",
+            "nombre": "Limpieza",
+            "img": "../img/limpieza.png",
+            "imprescindible": false,
+            "categoria": "OC"
+        },
+        {
+            "id": "10",
+            "nombre": "Basuras",
+            "img": "../img/basuras.png",
+            "imprescindible": true,
+            "categoria": "S_BAS"
+        }
+        
+    ],
+    "registros": [
+        {
+            "id": "1",
+            "fecha": "05/2023",
+            "pagos": [
+                {
+                    "idConcepto": "7",
+                    "importeTotal": 45.78,
+                    "numPagos": 5
+                },
+                {
+                    "idConcepto": "2",
+                    "importeTotal": 37.23,
+                    "numPagos": 3
+                }
+            ]
+        }
+    ]
+}
