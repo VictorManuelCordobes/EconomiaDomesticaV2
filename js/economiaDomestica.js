@@ -23,6 +23,13 @@ const formatoImporte = new Intl.NumberFormat('es-ES', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
 });
+const formatoMedia = new Intl.NumberFormat('es-ES', {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3
+});
+const formatoEntero = new Intl.NumberFormat('es-ES', {
+    maximumFractionDigits: 0
+});
 function crearInputPrecio() {
     const input = document.createElement('input');
     input.type = 'text'; // o 'number', según prefieras
@@ -30,25 +37,35 @@ function crearInputPrecio() {
     input.placeholder = 'Inserta precio en €';
     return input;
 }
-const CONCEPTOS = [
-    { nombre: 'Luz', inputPrecio: crearInputPrecio(), imagen: 'img/luz.png' },
-    { nombre: 'Agua', inputPrecio: crearInputPrecio(), imagen: 'img/agua.png' },
-    { nombre: 'Gas', inputPrecio: crearInputPrecio(), imagen: 'img/gas.png' },
-    { nombre: 'Comunidad', inputPrecio: crearInputPrecio(), imagen: 'img/comunidad.png' },
-    { nombre: 'Internet', inputPrecio: crearInputPrecio(), imagen: 'img/internet.png' },
-    { nombre: 'Teléfono', inputPrecio: crearInputPrecio(), imagen: 'img/telefono.png' },
-    { nombre: 'Seguro del hogar', inputPrecio: crearInputPrecio(), imagen: 'img/seguro.png' },
-    { nombre: 'Alquiler', inputPrecio: crearInputPrecio(), imagen: 'img/alquiler.jpg' },
-    { nombre: 'Limpieza', inputPrecio: crearInputPrecio(), imagen: 'img/limpieza.png' },
-    { nombre: 'Basuras', inputPrecio: crearInputPrecio(), imagen: 'img/basuras.png' }
-];
+const CONCEPTOS = [];
 
 const contenedorConceptos = document.getElementById('conceptos');
 const zonaContador = document.getElementById('contador');
 const zonaAviso = document.getElementById('aviso');
 const botonFinalizar = document.getElementById('btn-finalizar');
 const zonaResumen = document.getElementById('resumen');
+//////////////////////////////////////////////////////////////////////////////////
+function crearPanelHistorial() {
+    const estilos = document.createElement('style');
+    estilos.textContent = ESTILOS_V2;
+    document.head.appendChild(estilos);
 
+    const panel = document.createElement('aside');
+    panel.id = 'historial';
+    panel.setAttribute('aria-label', 'Historial de pagos');
+
+    const titulo = document.createElement('h2');
+    titulo.textContent = 'Pagos realizados';
+
+    const lista = document.createElement('div');
+    lista.id = 'lista-pagos';
+
+    panel.append(titulo, lista);
+    document.body.appendChild(panel);
+    return lista;
+}
+const zonaHistorial = crearPanelHistorial();
+//////////////////////////////////////////////////////////////////////////////////
 function leerPrecioInput(input) {
     const textoLimpio = input.value.trim().replace(',', '.');
     if (textoLimpio === '') {
