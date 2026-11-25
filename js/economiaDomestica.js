@@ -66,6 +66,33 @@ function crearPanelHistorial() {
 }
 const zonaHistorial = crearPanelHistorial();
 //////////////////////////////////////////////////////////////////////////////////
+function normalizarRutaImagen(ruta) {
+    return ruta.replace(/^(\.\.\/)+/, '');
+}
+async function cargarConceptos() {
+    const respuesta = await fetch(`${URL_API}/conceptos`);
+    if (!respuesta.ok) {
+        throw new Error(`Error ${respuesta.status} al cargar los conceptos.`);
+    }
+    const conceptos = await respuesta.json();
+    return conceptos.map((concepto) => ({
+        ...concepto,
+        imagen: normalizarRutaImagen(concepto.img),
+        inputPrecio: crearInputPrecio()
+    }));
+}
+
+async function guardarTramite(registro) {
+    const respuesta = await fetch(`${URL_API}/registros`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registro)
+    });
+    if (!respuesta.ok) {
+        throw new Error(`Error ${respuesta.status} al guardar el trámite.`);
+    }
+}
+
 function leerPrecioInput(input) {
     const textoLimpio = input.value.trim().replace(',', '.');
     if (textoLimpio === '') {
