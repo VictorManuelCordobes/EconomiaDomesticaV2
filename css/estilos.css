@@ -33,19 +33,15 @@
     }
 body {
     font-family: system-ui, sans-serif;
-    max-width: 960px;
-    margin: 0 auto;
+    box-sizing: border-box;
+    width: 75%;
+    max-width: none;
+    margin: 0;
+    height: 100vh;
     padding: 1rem;
     color: #222;
+    overflow-y: auto;
 }
-    body {
-        box-sizing: border-box;
-        width: 75%;
-        max-width: none;
-        margin: 0;
-        height: 100vh;
-        overflow-y: auto;
-    }
 h1,
 header p {
     text-align: center;
