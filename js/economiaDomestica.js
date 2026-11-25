@@ -100,10 +100,17 @@ function leerPrecioInput(input) {
     }
     return Number(textoLimpio);
 }
+function redondear(importe) {
+    return Math.round(importe * 100) / 100;
+}
 function formatearEuros(importe) {
     return `${formatoImporte.format(importe)} €`;
 }
-
+function formatearFechaHora(fecha) {
+    const dos = (numero) => String(numero).padStart(2, '0');
+    return `${dos(fecha.getDate())}/${dos(fecha.getMonth() + 1)}/${fecha.getFullYear()} ` +
+        `${dos(fecha.getHours())}:${dos(fecha.getMinutes())}`;
+}
 
 function esPrecioValido(precio) {
     return typeof precio === 'number' && Number.isFinite(precio) && precio >= 0;
@@ -180,42 +187,58 @@ function mostrarLineas(lineas) {
 
 function registrarPago(id) {
     const concepto = CONCEPTOS[id];
-    if (!esPrecioValido(leerPrecioInput(concepto.inputPrecio))) {
-        throw new TypeError(`El precio de «${concepto.nombre}» no es válido.`);
+    const importe = leerPrecioInput(concepto.inputPrecio);
+    if (!esPrecioValido(importe)) {
+        throw new TypeError(
+            `No puede registrarse un pago sin importe en «${concepto.nombre}»: indica una cantidad mayor que 0.`
+        );
     }
-    pagos.push(id);
-    gastoTotal += leerPrecioInput(concepto.inputPrecio);
-    concepto.inputPrecio.value="";
+    pagos.push({ id, importe });
+    gastoTotal += importe;
+    concepto.inputPrecio.value = '';
     actualizarContador();
+    agregarLineaHistorial(id, importe);
 }
 
 function reiniciarRegistro() {
     pagos = [];
     gastoTotal = 0;
+    fechaTramite = null;
+    CONCEPTOS.forEach((concepto) => { concepto.inputPrecio.value = ''; });
     actualizarContador();
 }
 
 
 function contarPagosPorConcepto() {
     return CONCEPTOS
-        .map((concepto, id) => ({
-            nombre: concepto.nombre,
-            cantidad: pagos.filter((idPago) => idPago === id).length
-        }))
+        .map((concepto, id) => {
+            const pagosConcepto = pagos.filter((pago) => pago.id === id);
+            return {
+                concepto,
+                idConcepto: concepto.id,
+                nombre: concepto.nombre,
+                cantidad: pagosConcepto.length,
+                total: redondear(pagosConcepto.reduce((suma, pago) => suma + pago.importe, 0))
+            };
+        })
         .filter((item) => item.cantidad > 0)
         .sort((a, b) => b.cantidad - a.cantidad || a.nombre.localeCompare(b.nombre, 'es'));
 }
 
 
-function construirLineasResumen() {
-    const detalle = contarPagosPorConcepto().map(
-        ({ nombre, cantidad }) => `${nombre} ---- ${cantidad} ${cantidad === 1 ? 'pago' : 'pagos'}`
+function construirLineasResumen(fecha, conceptos) {
+    const detalle = conceptos.map(
+        ({ nombre, cantidad, total }) =>
+            `${nombre} ---- ${cantidad} ${cantidad === 1 ? 'pago' : 'pagos'} ---- ` +
+            `${formatearEuros(total / cantidad)} ---- ${formatearEuros(total)}`
     );
-    const gastoMedio = calcularGastoMedio(gastoTotal, pagos.length);
+    const montante = Math.floor(redondear(gastoTotal));                  // sin decimales, hacia abajo
+    const gastoMedio = calcularGastoMedio(gastoTotal, conceptos.length); // por concepto incluido
     return [
+        `Fecha: ${formatearFechaHora(fecha)}`,
         ...detalle,
-        `Gasto final: ${formatearEuros(gastoTotal)}`,
-        `Gasto medio: ${formatearEuros(gastoMedio)}/pago`
+        `Gasto final: ${formatoEntero.format(montante)} €`,
+        `Gasto medio: ${formatoMedia.format(gastoMedio)} €/concepto`
     ];
 }
 
@@ -227,11 +250,14 @@ function manejarClickConcepto(evento) {
     }
     limpiarAviso();
     try {
-        const id = obtenerIdConcepto(boton.dataset.id);
-        if (resumenMostrado) {
-            limpiarResumen();
-            resumenMostrado = false;
+        if (tramiteFinalizado) {
+            throw new Error('El trámite ya está finalizado: espera a que se limpie la pantalla para empezar otro.');
         }
+        if (fechaTramite === null && !iniciarTramite()) {
+            return;
+        }
+        const id = obtenerIdConcepto(boton.dataset.id);
+        limpiarResumen();
         registrarPago(id);
     } catch (error) {
         mostrarAviso(error.message);
@@ -240,25 +266,63 @@ function manejarClickConcepto(evento) {
 
 function finalizarTramite() {
     limpiarAviso();
+    if (tramiteFinalizado) {
+        return;
+    }
+    if (pagos.length === 0) {
+        mostrarLineas(['No se ha registrado ningún pago']);
+        return;
+    }
     try {
-        if (pagos.length === 0) {
-            mostrarLineas(['No se ha registrado ningún pago']);
-        } else {
-            mostrarLineas(construirLineasResumen());
-        }
-        resumenMostrado = true;
-        reiniciarRegistro();
+        const conceptos = contarPagosPorConcepto();
+        // Registro del trámite tal y como está en el json: mes/año una vez y un elemento por concepto
+        const registro = {
+            fecha: fechaTramite,
+            pagos: conceptos.map(({ idConcepto, cantidad, total }) => ({
+                idConcepto,
+                importeTotal: total,
+                numPagos: cantidad
+            }))
+        };
+        mostrarLineas(construirLineasResumen(new Date(), conceptos));
+        ventanaInfo = abrirVentanaInfo(conceptos);
+        tramiteFinalizado = true;
+        botonFinalizar.disabled = true;
+        setTimeout(() => cerrarTramite(registro), MS_LIMPIEZA);
     } catch (error) {
         mostrarAviso(error.message);
     }
-    
 }
-
-function iniciar() {
-    mostrarConceptos();
+async function cerrarTramite(registro) {
+    if (ventanaInfo && !ventanaInfo.closed) {
+        ventanaInfo.close();
+    }
+    ventanaInfo = null;
+    limpiarHistorial();
+    limpiarResumen();
+    reiniciarRegistro();
+    tramiteFinalizado = false;
+    botonFinalizar.disabled = false;
+    try {
+        await guardarTramite(registro);
+    } catch (error) {
+        mostrarAviso(`No se pudo guardar el trámite: ${error.message}`);
+    }
+    // Nuevo trámite: se pide otra vez mes y año (con un respiro para que se repinte la página)
+    setTimeout(iniciarTramite, 100);
+}
+async function iniciar() {
     actualizarContador();
     contenedorConceptos.addEventListener('click', manejarClickConcepto);
     botonFinalizar.addEventListener('click', finalizarTramite);
+    try {
+        CONCEPTOS.push(...await cargarConceptos());
+    } catch (error) {
+        mostrarAviso(`No se pudieron cargar los conceptos. ¿Está arrancado json-server? (${error.message})`);
+        return;
+    }
+    mostrarConceptos();
+    setTimeout(iniciarTramite, 100);
 }
 
 iniciar();
