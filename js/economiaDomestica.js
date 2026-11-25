@@ -1,5 +1,5 @@
 const URL_API = 'http://localhost:3000';
-
+const MS_LIMPIEZA = 10000;                 
 const CATEGORIAS = {
     CULT: 'Cultura',
     ALI: 'Alimentación',
@@ -288,7 +288,31 @@ function construirLineasResumen(fecha, conceptos) {
         `Gasto medio: ${formatoMedia.format(gastoMedio)} €/concepto`
     ];
 }
+function abrirVentanaInfo(conceptos) {
+    const ventana = window.open('', 'detalleTramite', 'width=480,height=360');
+    if (!ventana) {
+        mostrarAviso('El navegador ha bloqueado la ventana emergente: permítela para ver el detalle.');
+        return null;
+    }
+    const doc = ventana.document;
+    doc.title = 'Detalle del trámite';
+    doc.body.style.fontFamily = 'Arial, sans-serif';
 
+    const titulo = doc.createElement('h2');
+    titulo.textContent = `Conceptos pagados (${fechaTramite})`;
+
+    const lista = doc.createElement('ul');
+    lista.append(...conceptos.map(({ concepto }) => {
+        const elemento = doc.createElement('li');
+        elemento.textContent =
+            `${concepto.nombre}: gasto ${concepto.imprescindible ? 'imprescindible' : 'prescindible'} ` +
+            `de categoría ${CATEGORIAS[concepto.categoria] ?? concepto.categoria}.`;
+        return elemento;
+    }));
+
+    doc.body.replaceChildren(titulo, lista);
+    return ventana;
+}
 
 function manejarClickConcepto(evento) {
     const boton = evento.target.closest('button[data-id]');
