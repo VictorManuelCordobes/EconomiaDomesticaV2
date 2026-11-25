@@ -184,6 +184,26 @@ function mostrarLineas(lineas) {
     zonaResumen.replaceChildren(...parrafos);
 }
 
+function resaltarConcepto(id) {
+    zonaHistorial.querySelectorAll('.resaltado')
+        .forEach((linea) => linea.classList.remove('resaltado'));
+    zonaHistorial.querySelectorAll(`[data-concepto="${id}"]`)
+        .forEach((linea) => linea.classList.add('resaltado'));
+}
+
+function agregarLineaHistorial(id, importe) {
+    const linea = document.createElement('p');
+    linea.className = 'linea-pago';
+    linea.dataset.concepto = id;
+    linea.textContent = `${CONCEPTOS[id].nombre} ${formatearEuros(importe)}`;
+    zonaHistorial.appendChild(linea);
+    resaltarConcepto(id);
+    zonaHistorial.scrollTop = zonaHistorial.scrollHeight;
+}
+
+function limpiarHistorial() {
+    zonaHistorial.replaceChildren();
+}
 
 function registrarPago(id) {
     const concepto = CONCEPTOS[id];
