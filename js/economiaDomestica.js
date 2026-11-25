@@ -204,7 +204,34 @@ function agregarLineaHistorial(id, importe) {
 function limpiarHistorial() {
     zonaHistorial.replaceChildren();
 }
+function pedirMesAnio() {
+    const hoy = new Date();
+    const porDefecto = `${String(hoy.getMonth() + 1).padStart(2, '0')}/${hoy.getFullYear()}`;
+    let mensaje = 'Nuevo trámite. Indica el mes y el año (MM/AAAA):';
+    while (true) {
+        const texto = prompt(mensaje, porDefecto);
+        if (texto === null) {
+            return null;
+        }
+        const coincidencia = texto.trim().match(PATRON_MES_ANIO);
+        if (coincidencia) {
+            return `${coincidencia[1].padStart(2, '0')}/${coincidencia[2]}`;
+        }
+        mensaje = 'Formato no válido. Escribe el mes y el año así: MM/AAAA (por ejemplo, 05/2023).';
+    }
+}
 
+function iniciarTramite() {
+    const fecha = pedirMesAnio();
+    if (fecha === null) {
+        mostrarAviso('Para registrar pagos tienes que indicar el mes y el año del trámite.');
+        return false;
+    }
+    fechaTramite = fecha;
+    limpiarAviso();
+    actualizarContador();
+    return true;
+}
 function registrarPago(id) {
     const concepto = CONCEPTOS[id];
     const importe = leerPrecioInput(concepto.inputPrecio);
