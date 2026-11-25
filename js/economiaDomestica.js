@@ -16,16 +16,16 @@ function crearInputPrecio() {
     return input;
 }
 const CONCEPTOS = [
-    { nombre: 'Luz', precio: crearInputPrecio(), imagen: 'img/luz.png' },
-    { nombre: 'Agua', precio: crearInputPrecio(), imagen: 'img/agua.png' },
-    { nombre: 'Gas', precio: crearInputPrecio(), imagen: 'img/gas.png' },
-    { nombre: 'Comunidad', precio: crearInputPrecio(), imagen: 'img/comunidad.png' },
-    { nombre: 'Internet', precio: crearInputPrecio(), imagen: 'img/internet.png' },
-    { nombre: 'Teléfono', precio: crearInputPrecio(), imagen: 'img/telefono.png' },
-    { nombre: 'Seguro del hogar', precio: crearInputPrecio(), imagen: 'img/seguro.png' },
-    { nombre: 'Alquiler', precio: crearInputPrecio(), imagen: 'img/alquiler.png' },
-    { nombre: 'Limpieza', precio: crearInputPrecio(), imagen: 'img/limpieza.png' },
-    { nombre: 'Basuras', precio: crearInputPrecio(), imagen: 'img/basuras.png' }
+    { nombre: 'Luz', inputPrecio: crearInputPrecio(), precio: 1, imagen: 'img/luz.png' },
+    { nombre: 'Agua', inputPrecio: crearInputPrecio(), precio: 1, imagen: 'img/agua.png' },
+    { nombre: 'Gas', inputPrecio: crearInputPrecio(), precio: 1, imagen: 'img/gas.png' },
+    { nombre: 'Comunidad', inputPrecio: crearInputPrecio(), precio: 1, imagen: 'img/comunidad.png' },
+    { nombre: 'Internet', inputPrecio: crearInputPrecio(), precio: 1, imagen: 'img/internet.png' },
+    { nombre: 'Teléfono', inputPrecio: crearInputPrecio(), precio: 1, imagen: 'img/telefono.png' },
+    { nombre: 'Seguro del hogar', inputPrecio: crearInputPrecio(), precio: 1, imagen: 'img/seguro.png' },
+    { nombre: 'Alquiler', inputPrecio: crearInputPrecio(), precio: 1, imagen: 'img/alquiler.jpg' },
+    { nombre: 'Limpieza', inputPrecio: crearInputPrecio(), precio: 1, imagen: 'img/limpieza.png' },
+    { nombre: 'Basuras', inputPrecio: crearInputPrecio(), precio: 1, imagen: 'img/basuras.png' }
 ];
 
 const contenedorConceptos = document.getElementById('conceptos');
@@ -77,7 +77,7 @@ function crearTarjetaConcepto(concepto, id) {
     const nombre = document.createElement('strong');
     nombre.textContent = concepto.nombre;
     
-    pie.append(nombre, concepto.precio);
+    pie.append(nombre, concepto.inputPrecio);
 
     figura.append(boton, pie);
     return figura;
@@ -115,11 +115,11 @@ function mostrarLineas(lineas) {
 
 function registrarPago(id) {
     const concepto = CONCEPTOS[id];
-    if (!esPrecioValido(concepto.precio)) {
+    if (!esPrecioValido(concepto.inputPrecio.value.trim())) {
         throw new TypeError(`El precio de «${concepto.nombre}» no es válido.`);
     }
     pagos.push(id);
-    gastoTotal += concepto.precio;
+    gastoTotal += concepto.inputPrecio.value.trim();
     actualizarContador();
 }
 
