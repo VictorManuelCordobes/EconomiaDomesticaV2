@@ -1,6 +1,21 @@
+const URL_API = 'http://localhost:3000';
+
+const CATEGORIAS = {
+    CULT: 'Cultura',
+    ALI: 'Alimentación',
+    DEP: 'Deportes',
+    OC: 'Ocio',
+    S_BAS: 'Servicios Básicos'
+};
+
+const PATRON_MES_ANIO = /^(0?[1-9]|1[0-2])[/-](\d{4})$/;
 
 let pagos = [];
 let gastoTotal = 0;
+
+let fechaTramite = null;        
+let tramiteFinalizado = false;  
+let ventanaInfo = null;  
 
 let resumenMostrado = false;
 
