@@ -1,5 +1,7 @@
+
 const URL_API = 'http://localhost:3000';
-const MS_LIMPIEZA = 10000;                 
+const MS_LIMPIEZA = 10000;
+
 const CATEGORIAS = {
     CULT: 'Cultura',
     ALI: 'Alimentación',
@@ -10,14 +12,14 @@ const CATEGORIAS = {
 
 const PATRON_MES_ANIO = /^(0?[1-9]|1[0-2])[/-](\d{4})$/;
 
+
+
 let pagos = [];
 let gastoTotal = 0;
 
-let fechaTramite = null;        
-let tramiteFinalizado = false;  
-let ventanaInfo = null;  
-
-let resumenMostrado = false;
+let fechaTramite = null;
+let tramiteFinalizado = false;
+let ventanaInfo = null;
 
 const formatoImporte = new Intl.NumberFormat('es-ES', {
     minimumFractionDigits: 2,
@@ -30,6 +32,7 @@ const formatoMedia = new Intl.NumberFormat('es-ES', {
 const formatoEntero = new Intl.NumberFormat('es-ES', {
     maximumFractionDigits: 0
 });
+
 function crearInputPrecio() {
     const input = document.createElement('input');
     input.type = 'text'; // o 'number', según prefieras
@@ -37,6 +40,8 @@ function crearInputPrecio() {
     input.placeholder = 'Inserta precio en €';
     return input;
 }
+
+
 const CONCEPTOS = [];
 
 const contenedorConceptos = document.getElementById('conceptos');
@@ -44,7 +49,8 @@ const zonaContador = document.getElementById('contador');
 const zonaAviso = document.getElementById('aviso');
 const botonFinalizar = document.getElementById('btn-finalizar');
 const zonaResumen = document.getElementById('resumen');
-//////////////////////////////////////////////////////////////////////////////////
+
+
 function crearPanelHistorial() {
     const estilos = document.createElement('style');
     estilos.textContent = ESTILOS_V2;
@@ -64,17 +70,21 @@ function crearPanelHistorial() {
     document.body.appendChild(panel);
     return lista;
 }
+
 const zonaHistorial = crearPanelHistorial();
-//////////////////////////////////////////////////////////////////////////////////
+
+
 function normalizarRutaImagen(ruta) {
     return ruta.replace(/^(\.\.\/)+/, '');
 }
+
 async function cargarConceptos() {
     const respuesta = await fetch(`${URL_API}/conceptos`);
     if (!respuesta.ok) {
         throw new Error(`Error ${respuesta.status} al cargar los conceptos.`);
     }
     const conceptos = await respuesta.json();
+
     return conceptos.map((concepto) => ({
         ...concepto,
         imagen: normalizarRutaImagen(concepto.img),
@@ -93,6 +103,7 @@ async function guardarTramite(registro) {
     }
 }
 
+
 function leerPrecioInput(input) {
     const textoLimpio = input.value.trim().replace(',', '.');
     if (textoLimpio === '') {
@@ -100,22 +111,25 @@ function leerPrecioInput(input) {
     }
     return Number(textoLimpio);
 }
+
 function redondear(importe) {
     return Math.round(importe * 100) / 100;
 }
+
 function formatearEuros(importe) {
-    return `${formatoImporte.format(importe)} €`;
+    return `${formatoImporte.format(importe)}€`;
 }
+
 function formatearFechaHora(fecha) {
     const dos = (numero) => String(numero).padStart(2, '0');
     return `${dos(fecha.getDate())}/${dos(fecha.getMonth() + 1)}/${fecha.getFullYear()} ` +
         `${dos(fecha.getHours())}:${dos(fecha.getMinutes())}`;
 }
 
-function esPrecioValido(precio) {
-    return typeof precio === 'number' && Number.isFinite(precio) && precio >= 0;
-}
 
+function esPrecioValido(precio) {
+    return typeof precio === 'number' && Number.isFinite(precio) && precio > 0;
+}
 
 function obtenerIdConcepto(valor) {
     const id = Number.parseInt(valor, 10);
@@ -125,12 +139,11 @@ function obtenerIdConcepto(valor) {
     return id;
 }
 
-
-function calcularGastoMedio(total, numeroPagos) {
-    if (numeroPagos <= 0) {
+function calcularGastoMedio(total, cantidad) {
+    if (cantidad <= 0) {
         throw new RangeError('No se puede calcular la media sin pagos.');
     }
-    return total / numeroPagos;
+    return total / cantidad;
 }
 
 
@@ -148,7 +161,7 @@ function crearTarjetaConcepto(concepto, id) {
     const pie = document.createElement('figcaption');
     const nombre = document.createElement('strong');
     nombre.textContent = concepto.nombre;
-    
+
     pie.append(nombre, concepto.inputPrecio);
 
     figura.append(boton, pie);
@@ -160,7 +173,8 @@ function mostrarConceptos() {
 }
 
 function actualizarContador() {
-    zonaContador.textContent = `Pagos registrados: ${pagos.length}`;
+    const tramite = fechaTramite ? `Trámite ${fechaTramite} — ` : '';
+    zonaContador.textContent = `${tramite}Pagos registrados: ${pagos.length}`;
 }
 
 function mostrarAviso(mensaje) {
@@ -184,6 +198,7 @@ function mostrarLineas(lineas) {
     zonaResumen.replaceChildren(...parrafos);
 }
 
+
 function resaltarConcepto(id) {
     zonaHistorial.querySelectorAll('.resaltado')
         .forEach((linea) => linea.classList.remove('resaltado'));
@@ -204,6 +219,8 @@ function agregarLineaHistorial(id, importe) {
 function limpiarHistorial() {
     zonaHistorial.replaceChildren();
 }
+
+
 function pedirMesAnio() {
     const hoy = new Date();
     const porDefecto = `${String(hoy.getMonth() + 1).padStart(2, '0')}/${hoy.getFullYear()}`;
@@ -232,6 +249,8 @@ function iniciarTramite() {
     actualizarContador();
     return true;
 }
+
+
 function registrarPago(id) {
     const concepto = CONCEPTOS[id];
     const importe = leerPrecioInput(concepto.inputPrecio);
@@ -279,8 +298,8 @@ function construirLineasResumen(fecha, conceptos) {
             `${nombre} ---- ${cantidad} ${cantidad === 1 ? 'pago' : 'pagos'} ---- ` +
             `${formatearEuros(total / cantidad)} ---- ${formatearEuros(total)}`
     );
-    const montante = Math.floor(redondear(gastoTotal));                  // sin decimales, hacia abajo
-    const gastoMedio = calcularGastoMedio(gastoTotal, conceptos.length); // por concepto incluido
+    const montante = Math.floor(redondear(gastoTotal));
+    const gastoMedio = calcularGastoMedio(gastoTotal, conceptos.length);
     return [
         `Fecha: ${formatearFechaHora(fecha)}`,
         ...detalle,
@@ -288,6 +307,7 @@ function construirLineasResumen(fecha, conceptos) {
         `Gasto medio: ${formatoMedia.format(gastoMedio)} €/concepto`
     ];
 }
+
 function abrirVentanaInfo(conceptos) {
     const ventana = window.open('', 'detalleTramite', 'width=480,height=360');
     if (!ventana) {
@@ -346,7 +366,7 @@ function finalizarTramite() {
     }
     try {
         const conceptos = contarPagosPorConcepto();
-        // Registro del trámite tal y como está en el json: mes/año una vez y un elemento por concepto
+
         const registro = {
             fecha: fechaTramite,
             pagos: conceptos.map(({ idConcepto, cantidad, total }) => ({
@@ -364,6 +384,8 @@ function finalizarTramite() {
         mostrarAviso(error.message);
     }
 }
+
+
 async function cerrarTramite(registro) {
     if (ventanaInfo && !ventanaInfo.closed) {
         ventanaInfo.close();
@@ -379,9 +401,10 @@ async function cerrarTramite(registro) {
     } catch (error) {
         mostrarAviso(`No se pudo guardar el trámite: ${error.message}`);
     }
-    // Nuevo trámite: se pide otra vez mes y año (con un respiro para que se repinte la página)
+
     setTimeout(iniciarTramite, 100);
 }
+
 async function iniciar() {
     actualizarContador();
     contenedorConceptos.addEventListener('click', manejarClickConcepto);
