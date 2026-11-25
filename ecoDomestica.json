@@ -52,7 +52,7 @@
         {
             "id": "8",
             "nombre": "Alquiler",
-            "img": "../img/alquiler.png",
+            "img": "../img/alquiler.jpg",
             "imprescindible": true,
             "categoria": "S_BAS"
         },

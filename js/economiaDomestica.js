@@ -50,7 +50,9 @@ const zonaAviso = document.getElementById('aviso');
 const botonFinalizar = document.getElementById('btn-finalizar');
 const zonaResumen = document.getElementById('resumen');
 
-
+const estilos = document.createElement('style');
+estilos.textContent = ESTILOS_V2;
+document.head.appendChild(estilos);
 function crearPanelHistorial() {
     const estilos = document.createElement('style');
     estilos.textContent = ESTILOS_V2;
